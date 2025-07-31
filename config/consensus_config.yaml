@@ -1,0 +1,203 @@
+# GraphMind Consensus Algorithm Configuration
+
+# Distributed System Settings
+distributed:
+  num_nodes: 10
+  byzantine_threshold: 0.33  # Up to 33% Byzantine failures
+  network_topology: "fully_connected"  # fully_connected, ring, random, scale_free
+  simulation_mode: true
+  
+# TA-BFT Consensus Parameters
+consensus:
+  algorithm: "ta_bft"
+  view_timeout: 10.0  # seconds
+  message_timeout: 5.0
+  max_rounds: 100
+  
+  # Topology awareness settings
+  topology_validation: true
+  centrality_weighting: true
+  structural_verification: true
+  
+  # Performance optimizations
+  batching_enabled: true
+  batch_size: 100
+  pipeline_stages: 3
+
+# Graph Topology Configuration
+topology:
+  # Graph generation parameters
+  generation_method: "barabasi_albert"  # erdos_renyi, barabasi_albert, watts_strogatz, custom
+  num_nodes: 100
+  edge_probability: 0.1  # For Erdos-Renyi
+  preferential_attachment: 3  # For Barabasi-Albert
+  
+  # Custom topology file (if using custom method)
+  topology_file: null
+  
+  # Dynamic topology changes
+  dynamic_changes: false
+  change_probability: 0.01
+  change_interval: 60  # seconds
+
+# Byzantine Failure Models
+byzantine:
+  failure_types:
+    - "crash"          # Nodes stop responding
+    - "arbitrary"      # Nodes send arbitrary messages
+    - "adaptive"       # Nodes adapt strategy based on protocol
+    - "collusive"      # Groups of Byzantine nodes coordinate
+  
+  failure_distribution: "random"  # random, targeted_high_centrality, targeted_low_centrality
+  failure_timing: "random"        # random, synchronized, gradual
+  
+  # Specific failure scenarios
+  scenarios:
+    - name: "random_crash"
+      type: "crash"
+      count: 2
+      timing: "random"
+    
+    - name: "coordinated_arbitrary"
+      type: "arbitrary"
+      count: 3
+      coordination: true
+      strategy: "double_voting"
+
+# Performance Benchmarking
+benchmarking:
+  enabled: true
+  metrics:
+    - "consensus_latency"
+    - "message_complexity"
+    - "throughput"
+    - "fault_tolerance"
+    - "scalability"
+  
+  # Test scenarios
+  scenarios:
+    - name: "scale_nodes"
+      node_counts: [10, 25, 50, 100, 200]
+      byzantine_ratios: [0.1, 0.2, 0.33]
+    
+    - name: "scale_failures"
+      node_count: 50
+      failure_counts: [1, 3, 5, 10, 16]
+    
+    - name: "topology_comparison"
+      topologies: ["fully_connected", "ring", "scale_free"]
+      node_count: 100
+      byzantine_count: 10
+
+# Cryptographic Settings
+cryptography:
+  key_size: 2048  # RSA key size
+  hash_algorithm: "SHA256"
+  signature_algorithm: "PSS"
+  
+  # Key generation and distribution
+  generate_keys: true
+  key_distribution: "pre_shared"  # pre_shared, certificate_authority, web_of_trust
+
+# Logging and Monitoring
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "structured"  # text, structured
+  output: "file"  # console, file, both
+  
+  # Log files
+  consensus_log: "logs/consensus.log"
+  byzantine_log: "logs/byzantine.log"
+  performance_log: "logs/performance.log"
+  
+  # Monitoring
+  metrics_collection: true
+  metrics_interval: 10  # seconds
+  prometheus_port: 9090
+
+# Research and Experimentation
+research:
+  # Theoretical analysis
+  complexity_analysis: true
+  convergence_proofs: true
+  
+  # Experimental parameters
+  experiment_runs: 10  # Number of runs for statistical significance
+  confidence_level: 0.95
+  statistical_tests: ["t_test", "wilcoxon", "kruskal_wallis"]
+  
+  # Reproducibility
+  random_seed: 42
+  deterministic_mode: false
+
+# Visualization Settings
+visualization:
+  enabled: true
+  real_time_plots: false
+  
+  # Plot types
+  plots:
+    - "consensus_timeline"
+    - "message_flow_graph"
+    - "topology_evolution"
+    - "performance_metrics"
+  
+  # Output settings
+  plot_format: "png"  # png, pdf, svg
+  plot_resolution: 300  # DPI
+  save_plots: true
+  plot_directory: "plots/"
+
+# Hardware and Resource Configuration
+resources:
+  # CPU settings
+  cpu_cores: 8
+  thread_pool_size: 16
+  
+  # Memory settings
+  max_memory_gb: 16
+  cache_size_mb: 512
+  
+  # GPU settings (if available)
+  use_gpu: false
+  gpu_device: 0
+  gpu_memory_fraction: 0.8
+  
+  # Network settings
+  network_bandwidth_mbps: 1000
+  network_latency_ms: 1
+  network_jitter_ms: 0.1
+
+# Testing and Validation
+testing:
+  # Unit tests
+  run_unit_tests: true
+  test_coverage_threshold: 0.8
+  
+  # Integration tests
+  distributed_testing: true
+  chaos_testing: true
+  
+  # Correctness verification
+  formal_verification: false
+  model_checking: false
+  
+  # Performance regression tests
+  regression_testing: true
+  performance_baseline: "benchmarks/baseline.json"
+
+# Advanced Features
+advanced:
+  # Consensus optimizations
+  fast_path_optimization: true
+  speculative_execution: true
+  pipeline_optimization: true
+  
+  # Research features
+  adaptive_timeout: true
+  dynamic_topology: false
+  machine_learning_optimization: false
+  
+  # Experimental algorithms
+  hybrid_consensus: false
+  quantum_byzantine_tolerance: false

@@ -1,0 +1,170 @@
+# GraphMind specific .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# GraphMind specific
+logs/
+*.log
+results/
+checkpoints/
+
+# Research data and experiments
+data/graphs/
+data/benchmarks/
+data/large_datasets/
+research/experiments/results/
+research/papers/drafts/
+
+# Graph files (can be large)
+*.graphml
+*.gexf
+*.edgelist
+*.adjlist
+*.graph
+*.mtx
+*.dat
+
+# Distributed computing artifacts
+*.hosts
+hostfile
+mpi_output/
+distributed_logs/
+
+# Model checkpoints and weights
+checkpoints/
+model_weights/
+*.pt
+*.pth
+*.pkl
+*.joblib
+
+# Benchmarking results
+benchmarks/results/
+performance_data/
+*.csv
+*.json
+timing_results/
+
+# CUDA compilation artifacts
+*.cubin
+*.fatbin
+*.ptx
+
+# Configuration with secrets
+config/secrets.yaml
+config/cluster_config.yaml
+.env.local
+.env.production
+
+# Docker volumes
+docker/data/
+volumes/
+
+# Test artifacts
+test-results/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter notebooks outputs
+.ipynb_checkpoints/
+*.ipynb
+
+# Graph visualization outputs
+plots/
+figures/
+*.png
+*.jpg
+*.pdf
+*.svg
+
+# Algorithm analysis outputs
+complexity_analysis/
+convergence_plots/
+performance_profiles/
+
+# Research artifacts
+research/proofs/temp/
+research/experiments/temp/
+paper_figures/
+
+# Large graph datasets
+*.tar.gz
+*.zip
+graph_collections/
+stanford_large_graphs/
+snap_datasets/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# Documentation build
+docs/_build/
+
+# Profiling outputs
+*.prof
+*.pstats
+memory_profiles/
+
+# MPI and distributed system logs
+mpi_logs/
+consensus_logs/
+byzantine_simulation/
+
+# Algorithm correctness verification
+verification_results/
+proof_checking/
+
+# Performance optimization artifacts
+optimization_results/
+tuning_logs/

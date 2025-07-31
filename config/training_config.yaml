@@ -1,0 +1,89 @@
+# GraphMind Distributed Training Configuration
+
+# Dataset configuration
+dataset:
+  name: "cora"  # Options: cora, citeseer, pubmed, reddit, ppi
+  path: "./data"
+  download: true
+  
+# Network topology for distributed nodes
+topology:
+  type: "ring"  # Options: ring, complete, star, random
+  connection_probability: 0.5  # For random topology
+
+# GNN Model configuration
+model:
+  type: "gcn"  # Options: gcn, gat, sage
+  hidden_dim: 64
+  num_layers: 2
+  dropout: 0.5
+  activation: "relu"
+  
+# Optimizer configuration
+optimizer:
+  type: "adam"  # Options: adam, sgd
+  lr: 0.01
+  weight_decay: 0.0005
+  momentum: 0.9  # For SGD
+  
+# Training configuration
+training:
+  num_rounds: 100
+  local_epochs: 1
+  batch_size: null  # Full batch for small graphs
+  early_stopping: true
+  patience: 20
+  
+# Byzantine consensus configuration
+consensus:
+  byzantine_threshold: 0.33
+  view_timeout: 10.0
+  enable_topology_validation: true
+  
+# Graph partitioning configuration
+partitioner:
+  objective_weights:
+    cut: 0.4
+    balance: 0.4
+    communication: 0.2
+  coarsening_threshold: 100
+  refinement_iterations: 10
+  max_load_imbalance: 0.1
+  
+# Federated aggregation configuration
+aggregator:
+  regularization_strength: 0.1
+  personalization_rate: 0.3
+  topology_aware: true
+  
+# Differential privacy configuration
+privacy:
+  enabled: true
+  budget: 1.0
+  noise_multiplier: 1.1
+  max_grad_norm: 1.0
+  
+# Output configuration
+output:
+  results_dir: "./results"
+  save_interval: 10
+  checkpoint_enabled: true
+  log_metrics: true
+  
+# Resource configuration
+resources:
+  device: "auto"  # Options: auto, cpu, cuda
+  num_workers: 4
+  pin_memory: true
+  
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/training.log"
+  
+# Experimental features
+experimental:
+  adaptive_partitioning: false
+  dynamic_topology: false
+  Byzantine_detection: true

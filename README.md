@@ -100,7 +100,7 @@ GraphMind advances the state-of-the-art in distributed graph learning through se
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/elcruzo/GraphMind
 cd GraphMind
 
 # Create environment
@@ -463,8 +463,8 @@ If you use GraphMind in your research, please cite:
 @article{adekoya2024graphmind,
   title={GraphMind: Distributed Graph Neural Networks with Byzantine Fault Tolerant Consensus},
   author={Adekoya, Ayomide Caleb},
-  journal={arXiv preprint arXiv:2024.xxxxx},
-  year={2024}
+  journal={arXiv preprint arXiv:2025.xxxxx},
+  year={2025}
 }
 ```
 

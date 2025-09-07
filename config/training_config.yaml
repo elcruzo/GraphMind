@@ -52,9 +52,14 @@ partitioner:
   
 # Federated aggregation configuration
 aggregator:
+  method: "topology_aware"  # Options: topology_aware, coordinate_median, trimmed_mean
   regularization_strength: 0.1
   personalization_rate: 0.3
   topology_aware: true
+  
+  # Byzantine-robust aggregation settings
+  byzantine_robust:
+    trim_ratio: 0.2  # For trimmed_mean method
   
 # Differential privacy configuration
 privacy:

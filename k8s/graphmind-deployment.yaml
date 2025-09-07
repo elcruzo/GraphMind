@@ -1,0 +1,302 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: graphmind-nodes
+  namespace: graphmind
+  labels:
+    app: graphmind
+    component: consensus-node
+    app.kubernetes.io/name: graphmind
+    app.kubernetes.io/component: distributed-node
+    app.kubernetes.io/part-of: graphmind
+spec:
+  serviceName: graphmind-headless
+  replicas: 5  # Start with 5 nodes for Byzantine fault tolerance (f=1)
+  selector:
+    matchLabels:
+      app: graphmind
+      component: consensus-node
+  template:
+    metadata:
+      labels:
+        app: graphmind
+        component: consensus-node
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      initContainers:
+      - name: wait-for-redis
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          until nc -z redis-service 6379; do
+            echo "Waiting for Redis..."
+            sleep 2
+          done
+          echo "Redis is ready!"
+      containers:
+      - name: graphmind-node
+        image: graphmind:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        - name: grpc
+          containerPort: 50051
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: GRAPHMIND_NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: GRAPHMIND_CONFIG_PATH
+          value: "/home/graphmind/app/config/node_config.yaml"
+        - name: GRAPHMIND_LOG_LEVEL
+          value: "INFO"
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: graphmind-secrets
+              key: redis-password
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            cpu: "1"
+            memory: 4Gi
+            nvidia.com/gpu: "1"
+          limits:
+            cpu: "4"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /startup
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+        volumeMounts:
+        - name: config
+          mountPath: /home/graphmind/app/config
+          readOnly: true
+        - name: data
+          mountPath: /home/graphmind/app/data
+        - name: logs
+          mountPath: /home/graphmind/app/logs
+        - name: keys
+          mountPath: /home/graphmind/app/keys
+        - name: tmp
+          mountPath: /tmp
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: config
+        configMap:
+          name: graphmind-config
+      - name: tmp
+        emptyDir: {}
+      nodeSelector:
+        node-type: gpu-enabled
+      tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - graphmind
+              topologyKey: kubernetes.io/hostname
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: fast-ssd
+  - metadata:
+      name: logs
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: standard
+  - metadata:
+      name: keys
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: fast-ssd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphmind-headless
+  namespace: graphmind
+  labels:
+    app: graphmind
+    component: consensus-node
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+  - name: metrics
+    port: 9090
+    targetPort: 9090
+  selector:
+    app: graphmind
+    component: consensus-node
+  publishNotReadyAddresses: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphmind-service
+  namespace: graphmind
+  labels:
+    app: graphmind
+    component: consensus-node
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+    protocol: TCP
+  selector:
+    app: graphmind
+    component: consensus-node
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: graphmind-config
+  namespace: graphmind
+data:
+  node_config.yaml: |
+    node:
+      hostname: "0.0.0.0"
+      port: 8080
+      grpc_port: 50051
+      
+    discovery:
+      backend: "redis"
+      backend_config:
+        host: "redis-service"
+        port: 6379
+        
+    consensus:
+      byzantine_threshold: 0.33
+      view_timeout: 10.0
+      
+    byzantine:
+      detection_threshold: 0.7
+      evidence_window: 100
+      
+    grpc:
+      connection_timeout: 30.0
+      max_workers: 10
+      
+    training:
+      model:
+        hidden_dim: 128
+        num_layers: 3
+        dropout: 0.5
+      optimizer:
+        learning_rate: 0.001
+        weight_decay: 0.0001
+      distributed:
+        batch_size: 32
+        sync_frequency: 10
+        
+    monitoring:
+      metrics:
+        enabled: true
+        collection_interval: 60.0
+      prometheus:
+        enabled: true
+        port: 9090
+      logging:
+        level: "INFO"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: graphmind-secrets
+  namespace: graphmind
+type: Opaque
+data:
+  redis-password: Z3JhcGhtaW5kX3JlZGlzX3Bhc3N3b3Jk  # base64: graphmind_redis_password

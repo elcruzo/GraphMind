@@ -420,12 +420,24 @@ class DistributedGraphMindTrainer:
         # Node capabilities (could be based on compute power, data size, etc.)
         node_capabilities = {i: 1.0 for i in range(self.world_size)}
         
-        # Perform federated aggregation
-        aggregation_result = self.aggregator.aggregate_parameters(
-            param_dict,
-            node_capabilities,
-            round_num
-        )
+        # Choose aggregation method based on configuration
+        aggregation_method = self.config.get('aggregator', {}).get('method', 'topology_aware')
+        
+        if aggregation_method in ['coordinate_median', 'trimmed_mean']:
+            # Use Byzantine-robust aggregation
+            aggregation_result = self.aggregator.byzantine_robust_aggregation(
+                param_dict,
+                node_capabilities,
+                round_num,
+                method=aggregation_method
+            )
+        else:
+            # Use original topology-aware aggregation
+            aggregation_result = self.aggregator.aggregate_parameters(
+                param_dict,
+                node_capabilities,
+                round_num
+            )
         
         # Apply personalization
         personalized_params = self.aggregator.apply_personalization(

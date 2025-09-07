@@ -1,0 +1,209 @@
+# GraphMind Distributed Node Configuration
+# Configuration for Byzantine fault-tolerant distributed GNN training
+
+node:
+  hostname: "localhost"
+  port: 8080
+  grpc_port: 50051
+  
+  # Node capabilities and resources
+  capabilities:
+    consensus: true
+    gnn_training: true
+    graph_partitioning: true
+    model_serving: true
+  
+  resources:
+    max_cpu_cores: 8
+    max_memory_gb: 16
+    gpu_available: true
+    storage_gb: 100
+
+# Service discovery configuration
+discovery:
+  backend: "redis"  # Options: redis, etcd, consul
+  
+  backend_config:
+    host: "localhost"
+    port: 6379
+    # For etcd: port: 2379
+    # For consul: port: 8500
+    
+    # Optional authentication
+    # username: "graphmind"
+    # password: "secure_password"
+  
+  # Health check configuration
+  health_checks:
+    - endpoint: "/health"
+      interval: 30.0
+      timeout: 5.0
+      healthy_threshold: 2
+      unhealthy_threshold: 3
+    
+    - endpoint: "/consensus/health"
+      interval: 60.0
+      timeout: 10.0
+      healthy_threshold: 1
+      unhealthy_threshold: 2
+
+# TA-BFT consensus algorithm configuration
+consensus:
+  byzantine_threshold: 0.33  # Max fraction of Byzantine nodes (f < n/3)
+  view_timeout: 10.0         # View change timeout in seconds
+  
+  # Topology-aware parameters
+  topology:
+    update_interval: 30.0     # Topology update interval
+    centrality_method: "eigenvector"  # Options: eigenvector, betweenness, closeness
+    weight_adaptation: true   # Adapt weights based on performance
+  
+  # Message batching and optimization
+  batching:
+    max_batch_size: 100       # Max messages per batch
+    batch_timeout: 1.0        # Max time to wait for batch
+    compression: true         # Enable message compression
+  
+  # Performance tuning
+  performance:
+    async_processing: true    # Enable async message processing
+    pipeline_stages: 3        # Number of pipeline stages
+    buffer_size: 1000         # Message buffer size
+
+# Byzantine fault detection configuration
+byzantine:
+  detection_threshold: 0.7    # Anomaly score threshold for detection
+  evidence_window: 100        # Max evidence entries to keep
+  verification_quorum: 0.5    # Fraction of nodes needed for verification
+  
+  # Detection algorithms
+  algorithms:
+    timing_analysis: true     # Enable timing-based detection
+    parameter_analysis: true  # Enable parameter anomaly detection
+    health_monitoring: true   # Enable health-based detection
+    statistical_outlier: true # Enable statistical outlier detection
+  
+  # Adaptive thresholds
+  adaptive_thresholds:
+    timing_deviation: 2.0     # Standard deviations for timing anomalies
+    parameter_anomaly: 0.8    # Threshold for parameter anomalies
+    health_degradation: 0.3   # Health score threshold
+    consensus_deviation: 0.5  # Consensus deviation threshold
+  
+  # Machine learning parameters
+  ml_detection:
+    isolation_forest:
+      contamination: 0.1      # Expected fraction of outliers
+      n_estimators: 100       # Number of trees
+    
+    dbscan:
+      eps: 0.5                # Neighborhood distance
+      min_samples: 3          # Min samples for core point
+
+# gRPC communication configuration
+grpc:
+  connection_timeout: 30.0    # Connection timeout in seconds
+  max_workers: 10             # Max thread pool workers
+  max_message_size: 67108864  # 64MB max message size
+  
+  # Connection pooling
+  connection_pool:
+    max_connections: 50       # Max connections per node
+    idle_timeout: 300.0       # Idle connection timeout
+    keepalive_time: 10.0      # Keepalive ping interval
+    keepalive_timeout: 5.0    # Keepalive ping timeout
+  
+  # Compression and optimization
+  compression: "gzip"         # Options: none, gzip, deflate
+  
+  # Security configuration (for production)
+  security:
+    tls_enabled: false        # Enable TLS encryption
+    cert_file: "certs/server.crt"
+    key_file: "certs/server.key"
+    ca_file: "certs/ca.crt"
+    
+    # mTLS configuration
+    require_client_cert: false
+    verify_client_cert: true
+
+# Graph neural network training configuration
+training:
+  # Model parameters
+  model:
+    hidden_dim: 128           # Hidden layer dimension
+    num_layers: 3             # Number of GNN layers
+    dropout: 0.5              # Dropout rate
+    activation: "relu"        # Activation function
+  
+  # Training parameters
+  optimizer:
+    type: "adam"              # Optimizer type
+    learning_rate: 0.001      # Learning rate
+    weight_decay: 0.0001      # L2 regularization
+    momentum: 0.9             # SGD momentum
+  
+  # Distributed training
+  distributed:
+    batch_size: 32            # Local batch size
+    gradient_accumulation: 4  # Gradient accumulation steps
+    sync_frequency: 10        # Model sync frequency (epochs)
+    
+    # Aggregation methods
+    aggregation_method: "byzantine_robust"  # Options: fedavg, byzantine_robust, trimmed_mean
+    aggregation_weights: "uniform"          # Options: uniform, data_size, performance
+
+# Monitoring and logging configuration
+monitoring:
+  # Metrics collection
+  metrics:
+    enabled: true             # Enable metrics collection
+    collection_interval: 60.0 # Metrics collection interval
+    retention_period: 86400   # Metrics retention (24 hours)
+    
+    # Prometheus integration
+    prometheus:
+      enabled: false          # Enable Prometheus metrics
+      port: 9090              # Metrics endpoint port
+      path: "/metrics"        # Metrics endpoint path
+  
+  # Logging configuration
+  logging:
+    level: "INFO"             # Log level
+    format: "structured"      # Options: structured, plain
+    
+    # File logging
+    file_logging:
+      enabled: true           # Enable file logging
+      path: "logs/graphmind.log"
+      rotation: "daily"       # Options: daily, size
+      retention: 7            # Days to retain logs
+    
+    # Centralized logging
+    centralized:
+      enabled: false          # Enable centralized logging
+      endpoint: "http://logstash:5000"
+      format: "json"
+
+# Development and testing configuration
+development:
+  debug_mode: false           # Enable debug mode
+  profiling: false            # Enable performance profiling
+  
+  # Simulation parameters
+  simulation:
+    byzantine_nodes: []       # List of node IDs to simulate as Byzantine
+    network_latency: 0.0      # Additional network latency (seconds)
+    packet_loss: 0.0          # Packet loss rate (0.0-1.0)
+  
+  # Testing configuration
+  testing:
+    unit_tests: true          # Run unit tests on startup
+    integration_tests: false # Run integration tests
+    chaos_testing: false     # Enable chaos engineering
+    
+    # Fault injection
+    fault_injection:
+      enabled: false          # Enable fault injection
+      failure_rate: 0.01      # Failure injection rate
+      failure_types: ["crash", "slow", "byzantine"]

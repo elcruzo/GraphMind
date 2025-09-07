@@ -476,6 +476,119 @@ class FederatedTopoAggregator:
         # Simple privacy accounting
         return self.privacy_budget / np.sqrt(num_nodes)
     
+    def byzantine_robust_aggregation(
+        self,
+        local_parameters: Dict[int, Dict[str, torch.Tensor]],
+        node_capabilities: Dict[int, float],
+        round_number: int,
+        method: str = "coordinate_median"
+    ) -> AggregationResult:
+        """
+        Byzantine-robust aggregation using coordinate-wise median or trimmed mean
+        
+        Args:
+            local_parameters: Dictionary mapping node IDs to model parameters
+            node_capabilities: Computational capabilities of each node
+            round_number: Current training round
+            method: Either "coordinate_median" or "trimmed_mean"
+            
+        Returns:
+            AggregationResult with robust global parameters
+        """
+        start_time = time.time()
+        
+        logger.info(f"Starting Byzantine-robust aggregation ({method}) for round {round_number}")
+        
+        # Convert to list format for easier processing
+        parameter_lists = list(local_parameters.values())
+        
+        if method == "coordinate_median":
+            global_parameters = self._coordinate_median_aggregation(parameter_lists)
+        elif method == "trimmed_mean":
+            global_parameters = self._trimmed_mean_aggregation(parameter_lists)
+        else:
+            raise ValueError(f"Unknown Byzantine-robust method: {method}")
+        
+        # Compute aggregation weights (uniform for robustness)
+        aggregation_weights = {
+            node_id: 1.0 / len(local_parameters) 
+            for node_id in local_parameters.keys()
+        }
+        
+        # Privacy and structural metrics (for compatibility)
+        privacy_spent = self._compute_privacy_spent(len(local_parameters))
+        structural_loss = 0.0  # Not applicable for robust methods
+        convergence_metric = self._compute_convergence_metric(
+            local_parameters, global_parameters
+        )
+        
+        # Update metrics
+        self.metrics['aggregation_rounds'] += 1
+        self.metrics['total_privacy_spent'] += privacy_spent
+        self.metrics['convergence_history'].append(convergence_metric)
+        self.metrics['structural_losses'].append(structural_loss)
+        
+        execution_time = time.time() - start_time
+        logger.info(f"Byzantine-robust aggregation completed in {execution_time:.2f}s")
+        
+        return AggregationResult(
+            global_parameters=global_parameters,
+            aggregation_weights=aggregation_weights,
+            privacy_spent=privacy_spent,
+            structural_loss=structural_loss,
+            convergence_metric=convergence_metric
+        )
+    
+    def _coordinate_median_aggregation(
+        self,
+        parameter_lists: List[Dict[str, torch.Tensor]]
+    ) -> Dict[str, torch.Tensor]:
+        """Byzantine-robust aggregation using coordinate-wise median"""
+        if not parameter_lists:
+            return {}
+        
+        aggregated = {}
+        
+        for param_name in parameter_lists[0].keys():
+            # Stack parameters from all nodes
+            param_stack = torch.stack([params[param_name] for params in parameter_lists])
+            
+            # Compute coordinate-wise median
+            median_param = torch.median(param_stack, dim=0)[0]
+            aggregated[param_name] = median_param
+        
+        return aggregated
+    
+    def _trimmed_mean_aggregation(
+        self,
+        parameter_lists: List[Dict[str, torch.Tensor]],
+        trim_ratio: float = 0.2
+    ) -> Dict[str, torch.Tensor]:
+        """Trimmed mean aggregation (removes outliers)"""
+        if not parameter_lists:
+            return {}
+        
+        aggregated = {}
+        
+        for param_name in parameter_lists[0].keys():
+            # Stack parameters from all nodes
+            param_stack = torch.stack([params[param_name] for params in parameter_lists])
+            
+            # Sort and trim outliers
+            sorted_params = torch.sort(param_stack, dim=0)[0]
+            n = len(parameter_lists)
+            trim_count = int(n * trim_ratio // 2)
+            
+            if trim_count > 0:
+                trimmed_params = sorted_params[trim_count:-trim_count]
+            else:
+                trimmed_params = sorted_params
+            
+            # Compute mean of remaining parameters
+            aggregated[param_name] = torch.mean(trimmed_params, dim=0)
+        
+        return aggregated
+    
     def apply_personalization(
         self,
         global_parameters: Dict[str, torch.Tensor],

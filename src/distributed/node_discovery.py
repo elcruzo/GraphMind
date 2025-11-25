@@ -18,13 +18,30 @@ from typing import Dict, List, Optional, Set, Callable, Any
 from concurrent.futures import ThreadPoolExecutor
 import threading
 
-import aiohttp
-import etcd3
-import consul
-import redis
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 import networkx as nx
+
+# Optional imports for service discovery backends
+try:
+    import aiohttp
+except ImportError:
+    aiohttp = None
+
+try:
+    import etcd3
+except ImportError:
+    etcd3 = None
+
+try:
+    import consul
+except ImportError:
+    consul = None
+
+try:
+    import redis
+except ImportError:
+    redis = None
 
 logger = logging.getLogger(__name__)
 

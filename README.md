@@ -108,9 +108,11 @@ aggregator:
 ## Requirements
 
 - Python 3.9+
-- CUDA 11.8+ (GPU)
-- OpenMPI
-- PyTorch, DGL, NetworkX
+- PyTorch 2.0+
+- torch-geometric 2.4+
+- NetworkX 3.0+
+- OpenMPI (for distributed training)
+- CUDA 11.8+ (optional, for GPU)
 
 ## License
 

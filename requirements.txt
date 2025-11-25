@@ -1,138 +1,23 @@
-# Core Deep Learning
-torch==2.1.0
-torch-geometric==2.4.0
-dgl==1.1.3
-torchvision==0.16.0
-torchaudio==2.1.0
-numpy==1.24.3
-scipy==1.11.3
+# Core
+torch>=2.0.0
+torch-geometric>=2.4.0
+numpy>=1.24.0
+scipy>=1.11.0
+networkx>=3.0
 
-# Graph Processing & Analysis
-networkx==3.2
-graph-tool==2.45  # Optional: High-performance graph analysis
-python-igraph==0.10.8
-karateclub==1.3.3
-cdlib==0.2.6  # Community detection library
+# Distributed
+mpi4py>=3.1.0
 
-# Distributed Computing & MPI
-mpi4py==3.1.5
-ray==2.8.0  # For distributed training
-horovod==0.28.1  # Distributed deep learning
+# gRPC
+grpcio>=1.50.0
+grpcio-tools>=1.50.0
+protobuf>=4.0.0
 
-# gRPC and Protocol Buffers
-grpcio==1.59.0
-grpcio-tools==1.59.0
-protobuf==4.24.4
+# Cryptography
+cryptography>=41.0.0
 
-# Consensus & Cryptography
-pycryptodome==3.19.0
-cryptography==41.0.7
-hashlib-compat==1.0.1
+# Config
+pyyaml>=6.0.0
 
-# Optimization & Algorithms
-cvxpy==1.4.1  # Convex optimization
-scipy-optimize==1.11.3
-scikit-learn==1.3.2
-ortools==9.8.3296  # Google OR-Tools for optimization
-deap==1.4.1  # Evolutionary algorithms
-
-# Linear Algebra & Scientific Computing
-sparse==0.14.0
-numba==0.58.1  # JIT compilation
-cython==3.0.5  # C extensions
-mkl==2024.0  # Intel Math Kernel Library
-
-# Data Processing
-pandas==2.1.3
-pyarrow==14.0.1
-h5py==3.10.0
-
-# Byzantine Fault Tolerance & Async Networking
-twisted==23.8.0  # Async networking
-aiohttp==3.9.1
-aiofiles==23.2.1
-
-# Graph Partitioning
-metis==0.2a5  # METIS graph partitioning
-kahip==3.16  # Karlsruhe High Quality Partitioning
-
-# Benchmarking & Profiling
-memory-profiler==0.61.0
-line-profiler==4.1.1
-py-spy==0.3.14
-pytest-benchmark==4.0.0
-
-# Visualization
-matplotlib==3.8.2
-seaborn==0.13.0
-plotly==5.17.0
-networkx[extra]==3.2  # For advanced layouts
-graphviz==0.20.1
-
-# Configuration & Utilities
-pyyaml==6.0.1
-hydra-core==1.3.2
-omegaconf==2.3.0
-python-dotenv==1.0.0
-click==8.1.7
-
-# Logging & Monitoring
-structlog==23.2.0
-wandb==0.16.0
-tensorboard==2.15.1
-mlflow==2.8.1
-
-# Testing
-pytest==7.4.3
-pytest-mpi==0.6  # MPI-aware testing
-pytest-cov==4.1.0
-pytest-asyncio==0.21.1
-hypothesis==6.88.1  # Property-based testing
-
-# Development Tools
-black==23.11.0
-isort==5.12.0
-mypy==1.7.1
-flake8==6.1.0
-pre-commit==3.5.0
-
-# Documentation
-sphinx==7.2.6
-sphinx-rtd-theme==1.3.0
-myst-parser==2.0.0
-
-# Jupyter & Analysis
-jupyter==1.0.0
-ipywidgets==8.1.1
-notebook==7.0.6
-
-# Performance & CUDA
-cupy-cuda11x==12.3.0  # CUDA accelerated NumPy
-pytorch-lightning==2.1.2
-accelerate==0.24.1
-
-# Statistical Analysis
-statsmodels==0.14.0
-pingouin==0.5.3  # Statistical analysis
-arch==6.2.0  # ARCH models
-
-# Optional: High-Performance Computing
-# rapids-cudf==23.10.*  # GPU DataFrames (uncomment if using Rapids)
-# rapids-cuml==23.10.*  # GPU ML algorithms
-
-# Research & Paper Generation
-latex==0.7.0  # LaTeX integration
-sympy==1.12  # Symbolic mathematics
-
-# Distributed System Utilities
-consul==1.1.0  # Service discovery
-etcd3==0.12.0  # Distributed key-value store
-redis==5.0.1
-
-# Security & Privacy
-differential-privacy==1.1.5
-opacus==1.4.0  # Differential privacy for PyTorch
-
-# Time Series (for dynamic graphs)
-tslearn==0.6.2
-pyts==0.13.0
+# ML
+scikit-learn>=1.3.0

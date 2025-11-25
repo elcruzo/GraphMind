@@ -704,7 +704,7 @@ class AdaptiveMultiLevelPartitioner:
             
             community_list = list(communities.values())
             return nx.algorithms.community.modularity(graph, community_list)
-        except:
+        except Exception:
             return 0.0
     
     def _compute_conductance(self, graph: nx.Graph, partition: Dict[int, int]) -> float:
@@ -724,7 +724,7 @@ class AdaptiveMultiLevelPartitioner:
             smaller_part = part_0_nodes if len(part_0_nodes) <= len(part_1_nodes) else part_1_nodes
             
             return nx.algorithms.cuts.conductance(graph, smaller_part)
-        except:
+        except Exception:
             return 0.0
     
     def _random_partition(self, graph: nx.Graph, num_partitions: int) -> Dict[int, int]:

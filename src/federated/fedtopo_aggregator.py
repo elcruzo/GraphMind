@@ -28,9 +28,21 @@ import networkx as nx
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.linalg import eigh
-from differential_privacy import GaussianMechanism
 
 logger = logging.getLogger(__name__)
+
+
+class GaussianMechanism:
+    """Simple Gaussian mechanism for differential privacy"""
+    
+    def __init__(self, epsilon: float = 1.0, delta: float = 1e-5):
+        self.epsilon = epsilon
+        self.delta = delta
+    
+    def add_noise(self, tensor: torch.Tensor, sensitivity: float) -> torch.Tensor:
+        sigma = sensitivity * np.sqrt(2 * np.log(1.25 / self.delta)) / self.epsilon
+        noise = torch.randn_like(tensor) * sigma
+        return tensor + noise
 
 @dataclass
 class FederatedNode:

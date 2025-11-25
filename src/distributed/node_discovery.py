@@ -231,7 +231,7 @@ class NodeDiscoveryService:
         if hasattr(self.client, 'close'):
             try:
                 await self.client.close()
-            except:
+            except Exception:
                 pass
         
         logger.info("Node discovery service stopped")
@@ -481,7 +481,7 @@ class NodeDiscoveryService:
                             health_scores.append(1.0)
                         else:
                             health_scores.append(0.5)
-                except:
+                except Exception:
                     health_scores.append(0.0)
             
             # Calculate average health score

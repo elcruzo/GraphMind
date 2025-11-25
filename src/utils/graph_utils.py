@@ -121,7 +121,7 @@ def compute_graph_statistics(graph: nx.Graph) -> Dict[str, Any]:
             if stats['is_connected']:
                 betweenness = nx.betweenness_centrality(graph)
                 stats['avg_betweenness_centrality'] = np.mean(list(betweenness.values()))
-        except:
+        except Exception:
             pass
     
     return stats

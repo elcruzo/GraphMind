@@ -186,7 +186,7 @@ class EnhancedConsensusMachine:
             # Select node with highest centrality as initial leader
             leader = max(centrality.keys(), key=lambda x: centrality[x])
             return str(leader)
-        except:
+        except Exception:
             # Fallback to lexicographic ordering
             return sorted(self.topology.nodes())[0]
     

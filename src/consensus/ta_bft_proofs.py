@@ -456,7 +456,7 @@ class TABFTFormalVerification:
                 adj_matrix = nx.adjacency_matrix(topology, nodelist=nodes)
                 fingerprint = hash(adj_matrix.toarray().tobytes())
                 results['fingerprint_computable'] = True
-            except:
+            except Exception:
                 results['fingerprint_computable'] = False
             
             logger.info(f"Topology verification: {sum(results.values())}/{len(results)} properties satisfied")

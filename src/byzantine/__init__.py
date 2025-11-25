@@ -5,15 +5,6 @@ This package provides comprehensive Byzantine fault detection, evidence collecti
 and tolerance mechanisms for distributed graph neural network training.
 """
 
-from .fault_detector import (
-    ByzantineFaultDetector,
-    ByzantineToleranceManager,
-    ByzantineEvidence,
-    NodeBehaviorProfile,
-    FaultType,
-    EvidenceType
-)
-
 __all__ = [
     'ByzantineFaultDetector',
     'ByzantineToleranceManager',
@@ -22,3 +13,11 @@ __all__ = [
     'FaultType',
     'EvidenceType'
 ]
+
+
+def __getattr__(name):
+    """Lazy import to avoid loading optional dependencies"""
+    if name in __all__:
+        from . import fault_detector
+        return getattr(fault_detector, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
